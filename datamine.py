@@ -19,6 +19,10 @@ stopwords_file = '/Users/JoeK/nltk_data/corpora/stopwords/english'
 # prints status text
 class StdOutListener(StreamListener):
 
+    def __init__(self):
+        super(StdOutListener, self).__init__()
+        self.accumulated_sentiment = 0.0
+
     def on_status(self, status):
         print status.text
 
@@ -43,7 +47,9 @@ class StdOutListener(StreamListener):
             time = tweet['created_at']
             sentiment_analysis = TextBlob(text)
 
-            print sentiment_analysis.sentiment.polarity, sentiment_analysis.sentiment.subjectivity, time
+            self.accumulated_sentiment += sentiment_analysis.sentiment.polarity
+
+            print self.accumulated_sentiment#self.accumulated_sentiment #, sentiment_analysis.sentiment.subjectivity, time
             #print time, sentiment_analysis.sentiment, text
 
     def on_error(self, status):
@@ -129,3 +135,4 @@ if __name__ == '__main__':
 
     #This line filter Twitter Streams to capture data by the keywords: 'python', 'javascript', 'ruby'
     stream.filter(track=['overwatch'])
+
