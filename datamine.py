@@ -7,6 +7,11 @@ from tweepy import Stream
 from textblob import TextBlob
 import json
 import re
+import datetime
+import time
+import plotly.plotly as py
+import plotly.tools as tls
+import plotly.graph_objs as go
 
 #Variables that contains the user credentials to access Twitter API
 access_token = "806572379963015170-HnQ46l3UhHucR21gV4VOpknbRjVMVsh"
@@ -44,10 +49,17 @@ class StdOutListener(StreamListener):
 
             # use for testing purposes
             text = ' '.join(feature_vector)
-            time = tweet['created_at']
+            date_time = tweet['created_at']
             sentiment_analysis = TextBlob(text)
 
             self.accumulated_sentiment += sentiment_analysis.sentiment.polarity
+
+            x = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f')
+            y = self.accumulated_sentiment
+
+            s.write(dict(x=x, y=y))
+
+            time.sleep(1)
 
             print self.accumulated_sentiment#self.accumulated_sentiment #, sentiment_analysis.sentiment.subjectivity, time
             #print time, sentiment_analysis.sentiment, text
@@ -132,6 +144,60 @@ if __name__ == '__main__':
 
     # creates a stream object
     stream = Stream(auth, listener)
+
+    # Setup plotly
+    stream_ids = tls.get_credentials_file()['stream_ids']
+
+    # Get stream id from stream id list
+    stream_id = stream_ids[0]
+
+    # Make instance of stream id object
+    stream_1 = go.Stream(
+        token=stream_id,  # link stream id to 'token' key
+        maxpoints=80  # keep a max of 80 pts on screen
+    )
+
+    # Initialize trace of streaming plot by embedding the unique stream_id
+    trace1 = go.Scatter(
+        x=[],
+        y=[],
+        mode='lines',
+        stream=stream_1  # (!) embed stream id, 1 per trace
+    )
+
+    data = go.Data([trace1])
+
+    # Add title to layout object
+    layout = go.Layout(
+        title='Twitter Overwatch Sentiment',
+        xaxis=dict(
+            title='Date & Time',
+            titlefont=dict(
+                size=18,
+                color='#7f7f7f'
+            )
+        ),
+        yaxis=dict(
+            title='Aggregate Sentiment',
+            titlefont=dict(
+                size=18,
+                color='#7f7f7f'
+            )
+        )
+    )
+    # Make a figure object
+    fig = go.Figure(data=data, layout=layout)
+
+    # Send fig to Plotly, initialize streaming plot, open new tab
+    py.iplot(fig, filename='python-streaming')
+
+    # We will provide the stream link object the same token that's associated with the trace we wish to stream to
+    s = py.Stream(stream_id)
+
+    # We then open a connection
+    s.open()
+
+    time.sleep(5)
 
     #This line filter Twitter Streams to capture data by the keywords: 'python', 'javascript', 'ruby'
     stream.filter(track=['overwatch'])
