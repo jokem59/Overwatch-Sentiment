@@ -154,7 +154,7 @@ if __name__ == '__main__':
     # Make instance of stream id object
     stream_1 = go.Stream(
         token=stream_id,  # link stream id to 'token' key
-        maxpoints=80  # keep a max of 80 pts on screen
+        maxpoints=10000  # keep a max of 80 pts on screen
     )
 
     # Initialize trace of streaming plot by embedding the unique stream_id
