@@ -1,25 +1,28 @@
 #!usr/bin/python
 
-from string import punctuation
 from tweepy.streaming import StreamListener
 from tweepy import OAuthHandler
 from tweepy import Stream
 from textblob import TextBlob
 import json
-import re
+import ConfigParser
 import datetime
+import re
 import time
 import plotly.plotly as py
 import plotly.tools as tls
 import plotly.graph_objs as go
+import processText as pt
 
-#Variables that contains the user credentials to access Twitter API
-access_token = "806572379963015170-HnQ46l3UhHucR21gV4VOpknbRjVMVsh"
-access_token_secret = "dog4ii3EDptLYWkoE3Ob7z6ahhl9ANZ6gAMCYMczfO4Db"
-consumer_key = "mYyBF5XlPEiVtSBWevY09x22o"
-consumer_secret = "5g8uTmS1JPn4QOhKIz0yzgQ0c8bwRNrF7tPrsJRvs4tlkg7ry2"
 
-stopwords_file = '/Users/JoeK/nltk_data/corpora/stopwords/english'
+config = ConfigParser.ConfigParser()
+config.read('config')
+
+stopwords = pt.getStopWordList(config.get('stopwords', 'stopword_file'))
+access_token = config.get('twittertokens', 'access_token')
+access_token_secret = config.get('twittertokens', 'access_token_secret')
+consumer_key = config.get('twittertokens', 'consumer_key')
+consumer_secret = config.get('twittertokens', 'consumer_secret')
 
 # prints status text
 class StdOutListener(StreamListener):
@@ -40,9 +43,9 @@ class StdOutListener(StreamListener):
             if re.search('RT @', tweet['text']):
                 return
 
-            text = processTweet(tweet['text'])
-            text = replaceTwoOrMore(text)
-            feature_vector = getFeatureVector(text)
+            text = pt.processTweet(tweet['text'])
+            text = pt.replaceTwoOrMore(text)
+            feature_vector = pt.getFeatureVector(text)
             for word in feature_vector:
                 if word in stopwords:
                     feature_vector.remove(word)
@@ -69,73 +72,8 @@ class StdOutListener(StreamListener):
             #returning Flase in on_data disconnects the stream
             return False
 
-def processTweet(tweet):
-    # process the tweets
-
-    #convert to ascii and ignore all else & remove \n
-    tweet = tweet.encode('ascii', 'ignore').replace('\n', ' ')
-    #Convert to lower case
-    tweet = tweet.lower()
-    #Convert www.* or https?://* to URL
-    tweet = re.sub('((www\.[^\s]+)|(https?://[^\s]+))','URL',tweet)
-    #Convert @username to AT_USER
-    tweet = re.sub('@[^\s]+','AT_USER',tweet)
-    #Remove additional white spaces
-    tweet = re.sub('[\s]+', ' ', tweet)
-    #Replace #word with word
-    tweet = re.sub(r'#([^\s]+)', r'\1', tweet)
-    #Remove apostorphes
-    tweet = tweet.replace("'", '')
-    #trim
-    tweet = tweet.lstrip().rstrip()
-    #remove punctuation
-    tweet = tweet.translate(None, punctuation)
-
-    return tweet
-
-
-def replaceTwoOrMore(s):
-    #look for 2 or more repetitions of character and replace with the character itself
-    pattern = re.compile(r"(.)\1{1,}", re.DOTALL)
-    return pattern.sub(r"\1\1", s)
-
-
-#start getStopWordList
-def getStopWordList(stopWordListFileName):
-    #read the stopwords file and build a list
-    stopWords = []
-    stopWords.append('ATUSER')
-    stopWords.append('URL')
-
-    with open(stopWordListFileName) as f:
-        line = f.readline()
-        for line in f.readlines():
-            stopWords.append(line.strip())
-
-    return stopWords
-
-
-#start getfeatureVector
-def getFeatureVector(tweet):
-    featureVector = []
-    #split tweet into words
-    words = tweet.split()
-    for w in words:
-        #replace two or more with two occurrences
-        w = replaceTwoOrMore(w)
-        #check if the word stats with an alphabet
-        val = re.search(r"^[a-zA-Z][a-zA-Z0-9]*$", w)
-        #ignore if it is a stop word
-        if w in stopwords or val is None:
-            continue
-        else:
-            featureVector.append(w.lower())
-    return featureVector
-
 
 if __name__ == '__main__':
-
-    stopwords = getStopWordList(stopwords_file)
 
     #This handles Twitter authetification and the connection to Twitter Streaming API
     listener = StdOutListener()
@@ -154,7 +92,7 @@ if __name__ == '__main__':
     # Make instance of stream id object
     stream_1 = go.Stream(
         token=stream_id,  # link stream id to 'token' key
-        maxpoints=10000  # keep a max of 80 pts on screen
+        maxpoints=600  # keep a max of 80 pts on screen
     )
 
     # Initialize trace of streaming plot by embedding the unique stream_id
