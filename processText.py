@@ -10,7 +10,7 @@ def processTweet(tweet):
     Strips text of tweet into list of lower case words without punctuation.  Replaces links and user names with URL
     and AT_USER respectively.
     :param tweet: <str> of tweet
-    :return:
+    :return: post processed <str> object
     '''
 
     #convert to ascii and ignore all else & remove \n
@@ -36,14 +36,22 @@ def processTweet(tweet):
 
 
 def replaceTwoOrMore(s):
+    '''
+    Looks for words like 'Cooooooolllll' and converts word to 'Cool'
+    :param s: <str>
+    :return: processed <str>
+    '''
     #look for 2 or more repetitions of character and replace with the character itself
     pattern = re.compile(r"(.)\1{1,}", re.DOTALL)
     return pattern.sub(r"\1\1", s)
 
 
-#start getStopWordList
 def getStopWordList(stopWordListFileName):
-    #read the stopwords file and build a list
+    '''
+    Returns a <list> with all stopwords in specified file
+    :param stopWordListFileName: <str> of file path
+    :return: <list> of stopwords
+    '''
     stopWords = []
     stopWords.append('ATUSER')
     stopWords.append('URL')
@@ -56,8 +64,12 @@ def getStopWordList(stopWordListFileName):
     return stopWords
 
 
-#start getfeatureVector
 def getFeatureVector(tweet):
+    '''
+    Converts <str> tweet into a <list> of feature vectors (words)
+    :param tweet: <str> of tweet
+    :return: <list> of words with stopwords stripped
+    '''
     featureVector = []
     #split tweet into words
     words = tweet.split()
