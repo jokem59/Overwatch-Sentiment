@@ -18,7 +18,7 @@ Functioning:
 
 Gotchas
   * Occasionally (~1 observation per 200 tweets), a tweet's creation time is earlier than the received time
-  * Plotly has 10000 max points for streaming graphs; @ 1 point/sec, you'll see ~166 minutes worth of live data at any given time
+  * Plotly has 10000 max points for streaming graphs; @ 1 point/sec, it's possible to see ~166 minutes worth of live data at any given time (currently set at 600 / 10 minutes)
 
 # License
 
