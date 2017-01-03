@@ -15,7 +15,7 @@ import plotlySetup
 
 
 config = ConfigParser.ConfigParser()
-config.read('config')
+config.read('/Users/JoeK/config_files/owconfig')
 
 stopwords = pt.getStopWordList(config.get('stopwords', 'stopword_file'))
 access_token = config.get('twittertokens', 'access_token')

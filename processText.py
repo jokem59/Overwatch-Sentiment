@@ -3,7 +3,7 @@ import re
 from string import punctuation
 
 config = ConfigParser.ConfigParser()
-config.read('config')
+config.read('/Users/JoeK/config_files/owconfig')
 
 def processTweet(tweet):
     '''
