@@ -12,6 +12,7 @@ import time
 import plotly.plotly as py
 import processText as pt
 import plotlySetup
+import connectSQL
 
 
 config = ConfigParser.ConfigParser()
@@ -51,10 +52,15 @@ class StdOutListener(StreamListener):
 
             # use for testing purposes
             text = ' '.join(feature_vector)
-            date_time = pt.parseDateTime(tweet['created_at'])
+            tweet_date, tweet_time = pt.parseDateTime(tweet['created_at'])
+
             sentiment_analysis = TextBlob(text)
 
             self.accumulated_sentiment += sentiment_analysis.sentiment.polarity
+
+            # persist data in MySQL
+            connectSQL.insertSQL(Tweets, session, tweet_date, tweet_time, sentiment_analysis.sentiment.polarity,
+                                 sentiment_analysis.sentiment.subjectivity, text)
 
             x = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f')
             y = self.accumulated_sentiment
@@ -63,7 +69,7 @@ class StdOutListener(StreamListener):
 
             time.sleep(1)
 
-            print date_time#self.accumulated_sentiment#self.accumulated_sentiment #, sentiment_analysis.sentiment.subjectivity, time
+            print self.accumulated_sentiment#self.accumulated_sentiment #, sentiment_analysis.sentiment.subjectivity, time
             #print time, sentiment_analysis.sentiment, text
 
     def on_error(self, status):
@@ -83,6 +89,9 @@ if __name__ == '__main__':
     twitter_stream = Stream(auth, listener)
     # creates a plotly stream object
     plotly_stream = plotlySetup.setupPlotly(600)
+
+    # setup MySQL server connection
+    Tweets, session = connectSQL.connectSQL(config)
 
     twitter_stream.filter(track=['overwatch'])
 

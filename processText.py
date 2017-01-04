@@ -1,6 +1,7 @@
 import ConfigParser
 import re
 from string import punctuation
+from datetime import datetime
 
 config = ConfigParser.ConfigParser()
 config.read('/Users/JoeK/config_files/owconfig')
@@ -86,17 +87,23 @@ def getFeatureVector(tweet):
     return featureVector
 
 
-def parseDateTime(datetime):
+def parseDateTime(input_str):
     '''
     The datetime component of a tweet includes timezone info (e.g. +0000).  Python 2.7 datetime.strptime() doesn't
-    support parsing out this component.  This function returns a datetime string without timezone information.
+    support parsing out this component.  This function converts the tweet's datetime info into a string without
+    timezone information, converts it into a <datetime> object, and returns the date and time separately.
     :param datetime: <str> datetime component of tweet
-    :return: <str> with no timezone information (default is +0000)
+    :return: <str> date, <str> time
     '''
-    m = re.search('\+[0-9]{4}\s', datetime)
+    m = re.search('\+[0-9]{4}\s', input_str)
     indices = m.span()
-    new_datetime = datetime[ :indices[0]] + datetime[indices[1]: ]
-    return new_datetime
+    datetime_str = input_str[ :indices[0]] + input_str[indices[1]: ]
+
+    datetime_obj = datetime.strptime(datetime_str, '%a %b %d %H:%M:%S %Y')
+    date = str(datetime_obj.year) + '-' + str(datetime_obj.month) + '-' + str(datetime_obj.day)
+    time = str(datetime_obj.hour) + ':' + str(datetime_obj.minute) + ':' + str(datetime_obj.second)
+
+    return date, time
 
 
 stopwords = getStopWordList(config.get('stopwords', 'stopword_file'))
