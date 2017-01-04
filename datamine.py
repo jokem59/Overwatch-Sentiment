@@ -51,7 +51,7 @@ class StdOutListener(StreamListener):
 
             # use for testing purposes
             text = ' '.join(feature_vector)
-            date_time = tweet['created_at']
+            date_time = pt.parseDateTime(tweet['created_at'])
             sentiment_analysis = TextBlob(text)
 
             self.accumulated_sentiment += sentiment_analysis.sentiment.polarity
@@ -63,7 +63,7 @@ class StdOutListener(StreamListener):
 
             time.sleep(1)
 
-            print self.accumulated_sentiment#self.accumulated_sentiment #, sentiment_analysis.sentiment.subjectivity, time
+            print date_time#self.accumulated_sentiment#self.accumulated_sentiment #, sentiment_analysis.sentiment.subjectivity, time
             #print time, sentiment_analysis.sentiment, text
 
     def on_error(self, status):

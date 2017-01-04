@@ -86,4 +86,17 @@ def getFeatureVector(tweet):
     return featureVector
 
 
+def parseDateTime(datetime):
+    '''
+    The datetime component of a tweet includes timezone info (e.g. +0000).  Python 2.7 datetime.strptime() doesn't
+    support parsing out this component.  This function returns a datetime string without timezone information.
+    :param datetime: <str> datetime component of tweet
+    :return: <str> with no timezone information (default is +0000)
+    '''
+    m = re.search('\+[0-9]{4}\s', datetime)
+    indices = m.span()
+    new_datetime = datetime[ :indices[0]] + datetime[indices[1]: ]
+    return new_datetime
+
+
 stopwords = getStopWordList(config.get('stopwords', 'stopword_file'))
