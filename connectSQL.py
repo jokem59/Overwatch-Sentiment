@@ -17,7 +17,7 @@ def connectSQL(config):
     Base = automap_base()
 
     # engine; have one table setup in owsentiment DB
-    engine = create_engine('mysql+mysqldb://root:' + sql_pword + '@127.0.0.1:3306/owsentiment', echo=True)
+    engine = create_engine('mysql+mysqldb://root:' + sql_pword + '@127.0.0.1:3306/owsentiment', echo=False)
 
     # reflect the tweets table
     Base.prepare(engine, reflect=True)

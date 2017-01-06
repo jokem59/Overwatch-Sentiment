@@ -69,8 +69,7 @@ class StdOutListener(StreamListener):
 
             time.sleep(1)
 
-            print self.accumulated_sentiment#self.accumulated_sentiment #, sentiment_analysis.sentiment.subjectivity, time
-            #print time, sentiment_analysis.sentiment, text
+            print 'Accumulated Sentiment:', self.accumulated_sentiment, 'Twitter User ID:', tweet['user']['id']
 
     def on_error(self, status):
         if status == 420:
