@@ -1,8 +1,10 @@
+#!usr/bin/python
+
 from sqlalchemy.ext.automap import automap_base
 from sqlalchemy.orm import Session
 from sqlalchemy import create_engine
+import MySQLdb
 import ConfigParser
-
 
 # config = ConfigParser.ConfigParser()
 # config.read('/Users/JoeK/config_files/owconfig')
@@ -44,3 +46,41 @@ def insertSQL(Tweets, session, date, time, sentiment, subjectivity, text):
     # rudimentary relationships are produced
     session.add(Tweets(date=date, time=time, sentiment=sentiment, subjectivity=subjectivity, text=text))
     session.commit()
+
+def connectDb(config):
+
+    sql_host = config.get('mysql', 'db_host')
+    sql_user = config.get('mysql', 'db_user')
+    sql_pword = config.get('mysql', 'db_pword')
+    sql_name = config.get('mysql', 'db_name')
+
+    # Open database connection
+    db = MySQLdb.connect(sql_host, sql_user, sql_pword, sql_name)
+
+    # prepare a cursor object using cursor() method
+    cursor = db.cursor()
+
+    # execute SQL query using execute() method.
+    cursor.execute("SELECT * FROM tweets;")
+
+    # Fetch a single row using fetchone() method.
+    data = cursor.fetchone()
+
+    print data
+
+    # disconnect from server
+    db.close()
+
+def getSQL(config):
+
+    sql_host = config.get('mysql', 'db_host')
+    sql_user = config.get('mysql', 'db_user')
+    sql_pword = config.get('mysql', 'db_pword')
+    sql_name = config.get('mysql', 'db_name')
+
+
+if __name__ == '__main__':
+    config = ConfigParser.ConfigParser()
+    config.read('/Users/JoeK/config_files/owconfig')
+
+    connectDb(config)

@@ -1,5 +1,4 @@
 #!usr/bin/python
-
 from tweepy.streaming import StreamListener
 from tweepy import OAuthHandler
 from tweepy import Stream
@@ -9,7 +8,6 @@ import ConfigParser
 import datetime
 import re
 import time
-import plotly.plotly as py
 import processText as pt
 import plotlySetup
 import connectSQL

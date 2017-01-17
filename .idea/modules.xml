@@ -4,7 +4,6 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/Overwatch Sentiment.iml" filepath="$PROJECT_DIR$/.idea/Overwatch Sentiment.iml" />
       <module fileurl="file://$USER_HOME$/Study/.idea/Study.iml" filepath="$USER_HOME$/Study/.idea/Study.iml" />
-      <module fileurl="file://$USER_HOME$/PycharmProjects/Sudoku/.idea/Sudoku.iml" filepath="$USER_HOME$/PycharmProjects/Sudoku/.idea/Sudoku.iml" />
     </modules>
   </component>
 </project>
